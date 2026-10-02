@@ -19,6 +19,20 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler( ProdutoNaoPodeSerAtivoException.class )
+    public ResponseEntity<ApiErrorResponse> tratarConflito (
+            ProdutoNaoPodeSerAtivoException erro,
+            HttpServletRequest request ) {
+        return resposta( HttpStatus.CONFLICT, erro.getMessage(), request, Map.of() );
+    }
+
+    @ExceptionHandler( CatalogoInativoException.class)
+    public ResponseEntity<ApiErrorResponse> catalogoInativo(
+            CatalogoInativoException erro,
+            HttpServletRequest request) {
+        return resposta( HttpStatus.NOT_FOUND, erro.getMessage(), request, Map.of() );
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> tratarValidacao(
             MethodArgumentNotValidException erro,
@@ -35,7 +49,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             HttpMessageNotReadableException.class,
-            MethodArgumentTypeMismatchException.class
+            MethodArgumentTypeMismatchException.class,
+            NovoPrecoInvalidoException.class,
+            QuantidadeInvalidaException.class
     })
     public ResponseEntity<ApiErrorResponse> tratarEntradaInvalida(
             Exception erro,
