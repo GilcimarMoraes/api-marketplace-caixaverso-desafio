@@ -1,6 +1,7 @@
 package br.edu.fiap.marketplace.entity;
 
 import br.edu.fiap.marketplace.exception.CatalogoInativoException;
+import br.edu.fiap.marketplace.exception.QuantidadeInvalidaException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,7 +53,7 @@ class CatalogoProdutoTest {
         }
 
         @Test
-        @DisplayName( "Deve alterar preco com sucesso" )
+        @DisplayName( "Não deve alterar preco de produto inativo" )
         void NaoDeveAlterarPrecoQuandoAtivo() {
             CatalogoProduto produto = new CatalogoProduto(
                     "nome", "desc", new BigDecimal( "10.00"), 2, false
@@ -62,5 +63,29 @@ class CatalogoProdutoTest {
 
             assertThat( produto.getPreco() ).isEqualByComparingTo( "10.00" );
         }
+
+        @Test
+        @DisplayName( "Deve baixar o estoque com sucesso" )
+        void deveBaixarEstoque() {
+            CatalogoProduto produto = new CatalogoProduto(
+                    "nome", "desc", new BigDecimal( "10.00"), 2, false
+            );
+
+            produto.baixarEstoque( 1 );
+
+            assertThat( produto.getEstoque() ).isEqualTo( 1 );
+        }
+    }
+
+    @Test
+    @DisplayName( "Não deve baixar estoque maior que disponivel" )
+    void NaoDeveAlterarPrecoQuandoAtivo() {
+        CatalogoProduto produto = new CatalogoProduto(
+                "nome", "desc", new BigDecimal( "10.00"), 2, false
+        );
+        assertThatThrownBy( () -> produto.baixarEstoque( 3 ) )
+                .isInstanceOf( QuantidadeInvalidaException.class );
+
+        assertThat( produto.getEstoque() ).isEqualTo( 2 );
     }
 }
