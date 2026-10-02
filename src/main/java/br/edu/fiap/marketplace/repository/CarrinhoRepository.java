@@ -8,6 +8,6 @@ import java.util.List;
 
 /** TODO adicionar consultas por usuário e status do carrinho. */
 public interface CarrinhoRepository extends JpaRepository<Carrinho, Long> {
-    List<Carrinho> findByIdUsuario(Long idUsuario);
-    List<Carrinho> findByStatusCarrinho(StatusCarrinho statusCarrinho);
+    List<Carrinho> findByUsuarioId(Long usuarioId);
+    List<Carrinho> findByStatus(StatusCarrinho status);
 }
