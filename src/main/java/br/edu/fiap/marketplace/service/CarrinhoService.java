@@ -49,7 +49,7 @@ public class CarrinhoService {
         if (!usuarioRepository.existsById(usuarioId)) {
             throw new IllegalArgumentException("Usuário não encontrado.");
         }
-        return carrinhoRepository.findByIdUsuario(usuarioId).stream()
+        return carrinhoRepository.findByUsuarioId(usuarioId).stream()
                 .map(CarrinhoResponse::de)
                 .toList();
     }
