@@ -4,10 +4,12 @@ import br.edu.fiap.marketplace.dto.CatalogoProdutoRequest;
 import br.edu.fiap.marketplace.dto.CatalogoProdutoResponse;
 import br.edu.fiap.marketplace.entity.CatalogoProduto;
 import br.edu.fiap.marketplace.exception.ProdutoCadastradoException;
+import br.edu.fiap.marketplace.exception.ProdutoNaoEncontradoException;
 import br.edu.fiap.marketplace.repository.CatalogoProdutoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /** TODO implementar cadastro, listagem, busca e alterações do catálogo. */
@@ -35,5 +37,27 @@ public class CatalogoProdutoService {
         CatalogoProduto produtoSalvo = catalogoProdutoRepository.save( novoProduto );
 
         return CatalogoProdutoResponse.de( produtoSalvo );
+    }
+
+    @Transactional( readOnly = true )
+    public List<CatalogoProdutoResponse> listar() {
+        List<CatalogoProduto> listar = catalogoProdutoRepository.findAll();
+
+        List<CatalogoProdutoResponse> response = listar.stream()
+                .map( CatalogoProdutoResponse::de )
+                .toList();
+
+        return response;
+    }
+
+    @Transactional( readOnly = true )
+    public CatalogoProdutoResponse buscarPorId( Long id ) {
+
+        CatalogoProduto produto = catalogoProdutoRepository.findById( id ).
+                orElseThrow( () -> new ProdutoNaoEncontradoException( id ) );
+
+        CatalogoProdutoResponse produtoEncontrado = CatalogoProdutoResponse.de( produto );
+
+        return produtoEncontrado;
     }
 }
