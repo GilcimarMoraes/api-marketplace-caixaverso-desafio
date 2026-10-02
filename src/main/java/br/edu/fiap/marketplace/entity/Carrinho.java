@@ -11,6 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 
@@ -35,6 +37,7 @@ public class Carrinho {
     private CatalogoProduto produto;
 
     @Column(nullable = false)
+    @Min(0)
     private Integer quantidade;
 
     @Enumerated(EnumType.STRING)
@@ -55,24 +58,34 @@ public class Carrinho {
         this.criadoEm = Instant.now();
     }
 
-    /** TODO aceitar somente quantidade positiva enquanto o carrinho estiver aberto. */
     public void alterarQuantidade(int novaQuantidade) {
-        throw new UnsupportedOperationException("TODO implementar alterarQuantidade");
+        if (!status.equals(StatusCarrinho.ABERTO)) {
+            throw new IllegalStateException("Não é possível alterar quantidade em carrinho que não esteja aberto.");
+        }
+
+        if (novaQuantidade < 0) {
+            throw new IllegalArgumentException("Quantidade não pode ser menor que zero.");
+        }
+
+        this.quantidade = novaQuantidade;
     }
 
-    /** TODO calcular preço do produto multiplicado pela quantidade. */
     public BigDecimal calcularTotal() {
-        throw new UnsupportedOperationException("TODO implementar calcularTotal");
+        return produto.getPreco().multiply(new BigDecimal(quantidade));
     }
 
-    /** TODO impedir finalizar carrinho cancelado ou já finalizado. */
     public void finalizar() {
-        throw new UnsupportedOperationException("TODO implementar finalizar");
+        if (!status.equals(StatusCarrinho.ABERTO)) {
+            throw new IllegalStateException("Não é possível finalizar um carrinho que não esteja aberto.");
+        }
+        this.status = StatusCarrinho.FINALIZADO;
     }
 
-    /** TODO impedir alterações posteriores ao cancelamento. */
     public void cancelar() {
-        throw new UnsupportedOperationException("TODO implementar cancelar");
+        if (!status.equals(StatusCarrinho.ABERTO)) {
+            throw new IllegalStateException("Somente carrinho aberto pode ser cancelado.");
+        }
+        this.status = StatusCarrinho.CANCELADO;
     }
 
     public Long getId() { return id; }
