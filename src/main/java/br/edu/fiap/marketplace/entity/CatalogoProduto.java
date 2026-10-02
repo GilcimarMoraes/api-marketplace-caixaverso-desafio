@@ -111,6 +111,11 @@ public class CatalogoProduto {
         }
     }
 
+    public void atualizar(String nome, String descricao) {
+        this.nome = nome;
+        this.descricao = descricao;
+    }
+
     public Long getId() { return id; }
     public String getNome() { return nome; }
     public String getDescricao() { return descricao; }

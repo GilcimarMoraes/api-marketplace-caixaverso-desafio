@@ -1,9 +1,10 @@
 package br.edu.fiap.marketplace.controller;
 
 import br.edu.fiap.marketplace.controller.mapper.GenericController;
+import br.edu.fiap.marketplace.dto.AtualizarQuantidadeRequest;
 import br.edu.fiap.marketplace.dto.CatalogoProdutoRequest;
 import br.edu.fiap.marketplace.dto.CatalogoProdutoResponse;
-import br.edu.fiap.marketplace.entity.CatalogoProduto;
+import br.edu.fiap.marketplace.dto.MovimentacaoRequest;
 import br.edu.fiap.marketplace.service.CatalogoProdutoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -69,5 +70,43 @@ public class CatalogoProdutoController implements GenericController {
 
         return ResponseEntity.ok( buscarProduto );
     }
+
+    @PutMapping ( "/{id}" )
+    @Operation( summary = "Atualizar Produto" )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Dados válidos" ),
+            @ApiResponse(responseCode = "404", description = "Dados inválidos"),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    })
+    public ResponseEntity<CatalogoProdutoResponse> atualizarProduto(
+            @Valid @PathVariable Long id, @Valid @RequestBody CatalogoProdutoRequest request ) {
+
+        CatalogoProdutoResponse response = catalogoProdutoService.atualizar( id, request );
+
+        return ResponseEntity.ok( response );
+
+    }
+
+    @PatchMapping("/{id}/alterarPreco")
+    public ResponseEntity<CatalogoProdutoResponse> atualizarPreco(
+            @PathVariable Long id,
+            @Valid @RequestBody MovimentacaoRequest request) {
+        return ResponseEntity.ok( catalogoProdutoService.atualizarPreco(id, request));
+    }
+
+    @PatchMapping("/{id}/estoqueBaixa")
+    public ResponseEntity<CatalogoProdutoResponse> baixarEstoque(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarQuantidadeRequest request) {
+        return ResponseEntity.ok( catalogoProdutoService.baixarEstoque(id, request));
+    }
+
+    @PatchMapping("/{id}/estoqueRepor")
+    public ResponseEntity<CatalogoProdutoResponse> resporEstoque(
+            @PathVariable Long id,
+            @Valid @RequestBody AtualizarQuantidadeRequest request) {
+        return ResponseEntity.ok( catalogoProdutoService.reporEstoque(id, request));
+    }
+
 
 }

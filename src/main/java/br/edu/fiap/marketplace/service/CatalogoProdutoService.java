@@ -1,7 +1,9 @@
 package br.edu.fiap.marketplace.service;
 
+import br.edu.fiap.marketplace.dto.AtualizarQuantidadeRequest;
 import br.edu.fiap.marketplace.dto.CatalogoProdutoRequest;
 import br.edu.fiap.marketplace.dto.CatalogoProdutoResponse;
+import br.edu.fiap.marketplace.dto.MovimentacaoRequest;
 import br.edu.fiap.marketplace.entity.CatalogoProduto;
 import br.edu.fiap.marketplace.exception.ProdutoCadastradoException;
 import br.edu.fiap.marketplace.exception.ProdutoNaoEncontradoException;
@@ -59,5 +61,61 @@ public class CatalogoProdutoService {
         CatalogoProdutoResponse produtoEncontrado = CatalogoProdutoResponse.de( produto );
 
         return produtoEncontrado;
+    }
+
+    @Transactional
+    public CatalogoProdutoResponse atualizar( Long id, CatalogoProdutoRequest request ) {
+        CatalogoProduto produto = buscar( id );
+
+        produto.atualizar( request.nome(), request.descricao() );
+
+        CatalogoProduto produtoSalvo = catalogoProdutoRepository.save( produto );
+
+        CatalogoProdutoResponse produtoAtualizado = CatalogoProdutoResponse.de( produtoSalvo );
+
+        return produtoAtualizado;
+    }
+
+    @Transactional
+    public CatalogoProdutoResponse atualizarPreco(Long id, MovimentacaoRequest request ) {
+        CatalogoProduto produto = buscar( id );
+
+        produto.alterarPreco( request.valor() );
+
+        CatalogoProduto produtoSalvo = catalogoProdutoRepository.save( produto );
+
+        CatalogoProdutoResponse response = CatalogoProdutoResponse.de( produtoSalvo );
+
+        return response;
+    }
+
+    public CatalogoProdutoResponse baixarEstoque(Long id, AtualizarQuantidadeRequest request) {
+        CatalogoProduto produto = buscar( id );
+
+        produto.baixarEstoque( request.quantidade() );
+
+        CatalogoProduto produtoSalvo = catalogoProdutoRepository.save( produto );
+
+        CatalogoProdutoResponse response = CatalogoProdutoResponse.de( produtoSalvo );
+
+        return response;
+    }
+
+    public CatalogoProdutoResponse reporEstoque(Long id, AtualizarQuantidadeRequest request) {
+        CatalogoProduto produto = buscar( id );
+
+        produto.reporEstoque( request.quantidade() );
+
+        CatalogoProduto produtoSalvo = catalogoProdutoRepository.save( produto );
+
+        CatalogoProdutoResponse response = CatalogoProdutoResponse.de( produtoSalvo );
+
+        return response;
+    }
+
+    private CatalogoProduto buscar( Long id) {
+        return catalogoProdutoRepository.findById( id )
+                .orElseThrow( () -> new ProdutoNaoEncontradoException( id ) );
+
     }
 }
