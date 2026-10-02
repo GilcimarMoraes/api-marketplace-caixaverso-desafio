@@ -1,5 +1,9 @@
 package br.edu.fiap.marketplace.entity;
 
+import br.edu.fiap.marketplace.exception.CatalogoInativoException;
+import br.edu.fiap.marketplace.exception.NovoPrecoInvalidoException;
+import br.edu.fiap.marketplace.exception.ProdutoNaoPodeSerAtivoException;
+import br.edu.fiap.marketplace.exception.QuantidadeInvalidaException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -41,6 +45,10 @@ public class CatalogoProduto {
             BigDecimal preco,
             Integer estoque,
             boolean ativo) {
+
+        validarNovoPreco( preco );
+        validarEstoque( estoque );
+
         this.nome = nome;
         this.descricao = descricao;
         this.preco = preco;
@@ -50,27 +58,57 @@ public class CatalogoProduto {
 
     /** TODO rejeitar preço nulo, zero ou negativo. */
     public void alterarPreco(BigDecimal novoPreco) {
-        throw new UnsupportedOperationException("TODO implementar alterarPreco");
+        validaCatalogoAtivo();
+        validarNovoPreco( novoPreco );
+        preco = novoPreco;
     }
 
     /** TODO diminuir o estoque sem permitir saldo negativo. */
     public void baixarEstoque(int quantidade) {
-        throw new UnsupportedOperationException("TODO implementar baixarEstoque");
+        if( quantidade <= 0|| quantidade > estoque ){
+            throw new QuantidadeInvalidaException();
+        }
+        estoque -= quantidade;
+
     }
 
     /** TODO aceitar somente reposição positiva. */
     public void reporEstoque(int quantidade) {
-        throw new UnsupportedOperationException("TODO implementar reporEstoque");
+        if( quantidade < 0 ) {
+            throw new QuantidadeInvalidaException();
+        }
+        estoque += quantidade;
     }
 
     /** TODO disponibilizar o produto para compra. */
     public void ativar() {
-        throw new UnsupportedOperationException("TODO implementar ativar");
+        if( estoque <= 0 ) {
+            throw new ProdutoNaoPodeSerAtivoException( id );
+        }
+        ativo = true;
     }
 
     /** TODO retirar o produto das novas compras. */
     public void desativar() {
-        throw new UnsupportedOperationException("TODO implementar desativar");
+        ativo = false;
+    }
+
+    private void validaCatalogoAtivo() {
+        if( !ativo ) {
+            throw  new CatalogoInativoException( id );
+        }
+    }
+
+    private void validarNovoPreco( BigDecimal valor ) {
+        if( valor == null || valor.compareTo( BigDecimal.ZERO ) <= 0 ) {
+            throw new NovoPrecoInvalidoException();
+        }
+    }
+
+    private void validarEstoque( Integer estoque ) {
+        if( estoque == null || estoque < 0 ){
+            throw new QuantidadeInvalidaException();
+        }
     }
 
     public Long getId() { return id; }
