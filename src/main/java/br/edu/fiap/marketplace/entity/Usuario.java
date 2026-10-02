@@ -47,17 +47,23 @@ public class Usuario {
 
     /** TODO implementar a troca do hash armazenado. */
     public void atualizarSenhaHash(String novoHash) {
-        throw new UnsupportedOperationException("TODO implementar atualizarSenhaHash");
+        this.senha = novoHash;
     }
 
     /** TODO permitir novamente o uso da conta. */
     public void ativar() {
-        throw new UnsupportedOperationException("TODO implementar ativar");
+        if (this.ativo) {
+            throw new UnsupportedOperationException("Usuário já está ativo.");
+        }
+        this.ativo = true;
     }
 
     /** TODO impedir login e novas compras. */
     public void desativar() {
-        throw new UnsupportedOperationException("TODO implementar desativar");
+        if (!this.ativo) {
+            throw new UnsupportedOperationException("Usuário não está ativo.");
+        }
+        this.ativo = false;
     }
 
     public Long getId() { return id; }
