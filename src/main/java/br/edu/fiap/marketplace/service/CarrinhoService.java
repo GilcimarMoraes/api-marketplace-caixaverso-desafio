@@ -5,6 +5,10 @@ import br.edu.fiap.marketplace.dto.CarrinhoResponse;
 import br.edu.fiap.marketplace.entity.Carrinho;
 import br.edu.fiap.marketplace.entity.CatalogoProduto;
 import br.edu.fiap.marketplace.entity.Usuario;
+import br.edu.fiap.marketplace.exception.CarrinhoNaoEncontradoException;
+import br.edu.fiap.marketplace.exception.ProdutoNaoEncontradoException;
+import br.edu.fiap.marketplace.exception.QuantidadeInvalidaException;
+import br.edu.fiap.marketplace.exception.UsuarioNaoEncontradoException;
 import br.edu.fiap.marketplace.repository.CarrinhoRepository;
 import br.edu.fiap.marketplace.repository.CatalogoProdutoRepository;
 import br.edu.fiap.marketplace.repository.UsuarioRepository;
@@ -29,7 +33,7 @@ public class CarrinhoService {
     @Transactional
     public CarrinhoResponse novoCarrinho(CarrinhoRequest request) {
         if (request.quantidade() < 1) {
-            throw new IllegalArgumentException("A quantidade não pode ser menor que 1");
+            throw new QuantidadeInvalidaException();
         }
 
         Usuario usuario = getUsuarioPorId(request.usuarioId());
@@ -47,7 +51,7 @@ public class CarrinhoService {
     @Transactional(readOnly = true)
     public List<CarrinhoResponse> buscarCarrinhoPorUsuarioId(Long usuarioId) {
         if (!usuarioRepository.existsById(usuarioId)) {
-            throw new IllegalArgumentException("Usuário não encontrado.");
+            throw new UsuarioNaoEncontradoException(usuarioId);
         }
         return carrinhoRepository.findByUsuarioId(usuarioId).stream()
                 .map(CarrinhoResponse::de)
@@ -69,16 +73,16 @@ public class CarrinhoService {
 
     private Carrinho getCarrinhoPorId(Long carrinhoId) {
         return carrinhoRepository.findById(carrinhoId)
-                .orElseThrow(() -> new IllegalArgumentException("Carrinho não encontrado"));
+                .orElseThrow(() -> new CarrinhoNaoEncontradoException(carrinhoId));
     }
 
     private Usuario getUsuarioPorId(Long usuarioId) {
         return usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(usuarioId));
     }
 
     private CatalogoProduto getProdutoPorId(Long produtoId) {
         return catalogoProdutoRepository.findById(produtoId)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado"));
+                .orElseThrow(() -> new ProdutoNaoEncontradoException(produtoId));
     }
 }
