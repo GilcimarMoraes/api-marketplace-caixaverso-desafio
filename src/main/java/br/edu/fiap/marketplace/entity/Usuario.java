@@ -1,5 +1,6 @@
 package br.edu.fiap.marketplace.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,6 +28,7 @@ public class Usuario {
     @Column(nullable = false, unique = true, length = 160)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false, length = 100)
     private String senha;
 
