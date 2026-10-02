@@ -51,7 +51,8 @@ public class GlobalExceptionHandler {
             HttpMessageNotReadableException.class,
             MethodArgumentTypeMismatchException.class,
             NovoPrecoInvalidoException.class,
-            QuantidadeInvalidaException.class
+            QuantidadeInvalidaException.class,
+            ProdutoNaoEncontradoException.class
     })
     public ResponseEntity<ApiErrorResponse> tratarEntradaInvalida(
             Exception erro,
