@@ -74,7 +74,7 @@ public class CatalogoProduto {
 
     /** TODO aceitar somente reposição positiva. */
     public void reporEstoque(int quantidade) {
-        if( quantidade < 0 ) {
+        if( quantidade <= 0 ) {
             throw new QuantidadeInvalidaException();
         }
         estoque += quantidade;
